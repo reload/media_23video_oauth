@@ -1,0 +1,21 @@
+<?php
+/**
+ * @file
+ * Install file for Media 23Video OAuth.
+ */
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Delete saved variables.
+ */
+function media_23video_oauth_uninstall() {
+  variable_del('media_23video_oauth_service_site_url');
+  variable_del('media_23video_oauth_service_api_key_public');
+  variable_del('media_23video_oauth_service_api_key_secret');
+  variable_del('media_23video_oauth_service_api_access_token');
+  variable_del('media_23video_oauth_service_api_access_token_secret');
+  variable_del('media_23video_oauth_service_api_url');
+  variable_del('media_23video_oauth_service_album_default');
+  variable_del('media_23video_oauth_service_user_default');
+}
