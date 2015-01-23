@@ -1,0 +1,16 @@
+name = Media 23Video OAuth
+description = Media 23Video with OAuth authentication
+package = 23Video OAuth
+version = 7.x-0.1
+core = 7.x
+
+files[] = media_23video_oauth.module
+files[] = includes/Media23VideoAuthStreamWrapper.inc
+files[] = includes/Media23VideoAuthBrowser.inc
+files[] = includes/Connector23Video.php
+files[] = js/async_upload.js
+files[] = themes/media_23video_oauth.theme.inc
+files[] = themes/media-23video-oauth.tpl.php
+files[] = libraries/23video-for-php/visualvideo.php
+
+dependencies[] = media
