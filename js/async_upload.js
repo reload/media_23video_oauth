@@ -1,9 +1,13 @@
+/**
+ * @file
+ * Javascript for proper handling of uploading files to a 23Video server.
+ */
 (function ($) {
   /**
    * Get upload token synchronously from Drupal site.
    */
-  function getUploadToken() {
-    $('#upload-status').text('Fetching upload token...');
+  function get_upload_token() {
+    $('#upload-status').text(Drupal.t('Fetching upload token...'));
     var title = $('#media-23video-oauth-upload input[name="title"]').val();
     var description = $('#media-23video-oauth-upload input[name="description"]').val();
     var album_id = $('#media-23video-oauth-upload input[name="album_id"]').val();
@@ -25,7 +29,7 @@
           $('#upload-status').text('An error ocurred while fetching upload token. Try again later.');
           $('#media-23video-oauth-upload .ajax-progress-throbber div').removeAttr('class');
           $('#media-23video-oauth-upload').find('input[name="title"], input[name="description"]').removeAttr('disabled');
-          alert("Error. Couldn't receive upload token. ");
+          alert(Drupal.t("Error. Couldn't receive upload token. "));
           return false;
         }
       },
@@ -35,16 +39,16 @@
         $('#media-23video-oauth-upload').find('input[name="title"], input[name="description"]').removeAttr('disabled');
         switch (statusText) {
           case 'timeout':
-            alert('The server timed out. Try again.');
+            alert(Drupal.t('The server timed out. Try again.'));
             break;
           case 'error':
-            alert('An error occurred.');
+            alert(Drupal.t('An error occurred.'));
             break;
           case 'abort':
-            alert('Upload was aborted.');
+            alert(Drupal.t('Upload was aborted.'));
             break;
           default:
-            alert('Unknown error occurred.');
+            alert(Drupal.t('Unknown error occurred.'));
             break;
         }
         return false;
@@ -61,12 +65,12 @@
     attach: function (context, settings) {
       $('#media-23video-oauth-upload').find('#edit-submit').click(function() {
         $('.ajax-progress-throbber div').attr('class', 'throbber');
-        getUploadToken();
+        get_upload_token();
       });
       $("#edit-description, #edit-title").keypress(function(event) {
         if (event.keyCode == 13) {
           $('.ajax-progress-throbber div').attr('class', 'throbber');
-          getUploadToken();
+          get_upload_token();
           return false;
         }
       });
@@ -94,16 +98,16 @@
           $('#media-23video-oauth-upload').find('input[name="title"], input[name="description"]').removeAttr('disabled');
           switch (statusText) {
             case 'timeout':
-              alert('The server timed out. Try again.');
+              alert(Drupal.t('The server timed out. Try again.'));
               break;
             case 'error':
-              alert('An error occurred.');
+              alert(Drupal.t('An error occurred.'));
               break;
             case 'abort':
-              alert('Upload was aborted.');
+              alert(Drupal.t('Upload was aborted.'));
               break;
             default:
-              alert('Unknown error occurred.');
+              alert(Drupal.t('Unknown error occurred.'));
               break;
           }
 
