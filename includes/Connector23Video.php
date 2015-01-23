@@ -41,7 +41,7 @@ class Connector23Video {
    * Perform GET request with json format with raw = 1.
    *
    * @param string $api_function
-   *   Api function, e.g. "/api/photo/list".
+   *   Api function, e.g., "/api/photo/list".
    * @param array $params
    *   Parameters to web service method.
    *

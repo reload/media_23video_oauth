@@ -239,7 +239,7 @@ function media_23video_oauth_admin_form($form, &$form_state) {
   $form['media_23video_oauth_service_site_url'] = array(
     '#type' => 'textfield',
     '#title' => t('23 Video site URL'),
-    '#description' => t('URL to your 23 Video site, e.g. http://example.23video.com/'),
+    '#description' => t('URL to your 23 Video site, e.g., http://example.23video.com/'),
     '#required' => TRUE,
     '#default_value' => variable_get('media_23video_oauth_service_site_url', 'http://example.23video.com'),
   );
