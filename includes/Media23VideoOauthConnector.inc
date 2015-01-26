@@ -63,7 +63,7 @@ class Media23VideoOauthConnector {
    * @param VisualVideo $consumer
    *   VisualVideo instance.
    */
-  public function setConsumer($consumer) {
+  public function setConsumer(VisualVideo $consumer) {
     if ($consumer && $consumer instanceof VisualVideo) {
       $this->consumer = $consumer;
     }
