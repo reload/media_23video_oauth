@@ -5,11 +5,10 @@
  * Create a 23video Stream Wrapper class for the Media/Resource module.
  */
 
-
 /**
  * Stream wrapper for 23Video.
  */
-class Media23VideoAuthStreamWrapper extends MediaReadOnlyStreamWrapper {
+class Media23VideoOauthStreamWrapper extends MediaReadOnlyStreamWrapper {
 
   /**
    * Handles parameters on the URL string.
@@ -39,7 +38,7 @@ class Media23VideoAuthStreamWrapper extends MediaReadOnlyStreamWrapper {
    */
   public function getOriginalThumbnailPath() {
     if ($parameters = $this->get_parameters()) {
-      $consumer = Connector23Video::getInstance();
+      $consumer = Media23VideoOauthConnector::getInstance();
       $photo_id = $parameters['v'];
       $token = $parameters['t'];
       $sections = $consumer->doSectionList($photo_id, $token);

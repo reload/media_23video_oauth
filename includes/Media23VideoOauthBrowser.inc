@@ -5,9 +5,9 @@
  */
 
 /**
- * Class Media23VideoAuthBrowser.
+ * Class Media23VideoOauthBrowser.
  */
-class Media23VideoAuthBrowser extends MediaBrowserPlugin {
+class Media23VideoOauthBrowser extends MediaBrowserPlugin {
   /**
    * Implements MediaBrowserPluginInterface::access().
    */

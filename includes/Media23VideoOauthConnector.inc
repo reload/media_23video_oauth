@@ -8,11 +8,11 @@
  */
 
 /**
- * Class Connector23Video.
+ * Class Media23VideoOauthConnector.
  *
  * Wrapper for communicating with 23Video's server via OAuth.
  */
-class Connector23Video {
+class Media23VideoOauthConnector {
   protected static $instance;
   protected $consumer;
 
@@ -253,7 +253,7 @@ class Connector23Video {
   public function getResponseJson($body) {
     $info = drupal_json_decode($body);
     if ($info['status'] != 'ok') {
-      // TODO: error handling
+      // TODO: error handling.
     }
     return $info;
   }
