@@ -2,6 +2,7 @@
  * @file
  * Javascript for proper handling of uploading files to a 23Video server.
  */
+
 (function ($) {
   /**
    * Get upload token synchronously from Drupal site.
@@ -27,7 +28,7 @@
           return true;
         }
         else {
-          $('#upload-status').text('An error ocurred while fetching upload token. Try again later.');
+          $('#upload-status').text('An error occurred while fetching upload token. Try again later.');
           upload.find('.ajax-progress-throbber div').removeAttr('class');
           upload.find('input[name="title"], input[name="description"]').removeAttr('disabled');
           alert(Drupal.t("Error. Couldn't receive upload token. "));
@@ -35,19 +36,22 @@
         }
       },
       error: function (xhr, statusText, errorThrown) {
-        $('#upload-status').text('An error ocurred. Try again later.');
+        $('#upload-status').text('An error occurred. Try again later.');
         $('#media-23video-oauth-upload .ajax-progress-throbber div').removeAttr('class');
         $('#media-23video-oauth-upload').find('input[name="title"], input[name="description"]').removeAttr('disabled');
         switch (statusText) {
           case 'timeout':
             alert(Drupal.t('The server timed out. Try again.'));
             break;
+
           case 'error':
             alert(Drupal.t('An error occurred.'));
             break;
+
           case 'abort':
             alert(Drupal.t('Upload was aborted.'));
             break;
+
           default:
             alert(Drupal.t('Unknown error occurred.'));
             break;
@@ -96,19 +100,22 @@
           return true;
         },
         error: function (xhr, statusText, errorThrown) {
-          $('#upload-status').text('An error ocurred. Try again later.');
+          $('#upload-status').text('An error occurred. Try again later.');
           $('#media-23video-oauth-upload .ajax-progress-throbber div').removeAttr('class');
           $('#media-23video-oauth-upload').find('input[name="title"], input[name="description"]').removeAttr('disabled');
           switch (statusText) {
             case 'timeout':
               alert(Drupal.t('The server timed out. Try again.'));
               break;
+
             case 'error':
               alert(Drupal.t('An error occurred.'));
               break;
+
             case 'abort':
               alert(Drupal.t('Upload was aborted.'));
               break;
+
             default:
               alert(Drupal.t('Unknown error occurred.'));
               break;
