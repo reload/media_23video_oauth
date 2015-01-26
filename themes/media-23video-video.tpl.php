@@ -3,7 +3,7 @@
 /**
  * @file
  *
- * Template file for theme('media_23video_oauth')
+ * Template file for theme('media_23video_oauth').
  */
 
 ?>
