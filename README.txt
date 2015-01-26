@@ -45,5 +45,8 @@ CONFIGURATION
      Users that should be allowed to see the videos uploaded to the 23Video account should have this permission.
    - Administer 23Video
      Admins with access to the 23Video account should have this permission.
- * Configure the 23Video account's access and api keys
+ * Configure the 23Video account's access and api keys in Configuration » Media » Media 23Video settings
    - This is required to connect the Drupal site with the 23Video account.
+   - To set this up on your 23Video account
+     - go to <account name>.reload.com/manage/api and add privileged access
+     - Copy consumer key, consumer secret, access token, access token secret to the module settings
