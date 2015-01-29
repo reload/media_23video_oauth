@@ -104,7 +104,7 @@ class Media23VideoOauthConnector {
    *   Json-decoded array
    */
   public function doPhotoList($photo_id = NULL, $flush_cache = FALSE) {
-    $cache = cache_get(__CLASS__ . ":" . $photo_id);
+    $cache = cache_get(__CLASS__ . ':' . __FUNCTION__ . ':' . $photo_id);
 
     if ($flush_cache == TRUE || empty($cache)) {
       $api_function = '/api/photo/list';
@@ -116,7 +116,7 @@ class Media23VideoOauthConnector {
 
       $response = $this->doRequest($api_function, $params);
 
-      cache_set(__CLASS__ . ":" . $photo_id, $response);
+      cache_set(__CLASS__ . ':' . __FUNCTION__ . ':' . $photo_id, $response);
     }
     else {
 
@@ -132,9 +132,20 @@ class Media23VideoOauthConnector {
    * @return array
    *   JSon-decoded array
    */
-  public function doAlbumList() {
-    $api_function = '/api/album/list';
-    return $this->doRequest($api_function, array());
+  public function doAlbumList($flush_cache = FALSE) {
+    $cache = cache_get(__CLASS__ . ':' . __FUNCTION__);
+
+    if ($flush_cache || empty($cache)) {
+      $api_function = '/api/album/list';
+      $response = $this->doRequest($api_function, array());
+
+      cache_set(__CLASS__ . ':' . __FUNCTION__, $response);
+    }
+    else {
+      $response = $cache->data;
+    }
+
+    return $response;
   }
 
   /**
@@ -227,7 +238,40 @@ class Media23VideoOauthConnector {
       'user_id' => $user_id,
       'return_url' => $return_url,
     );
-    return $this->doRequest($api_function, $params);
+    $response = $this->doRequest($api_function, $params);
+
+    return $response;
+  }
+
+  /**
+   * Get session token.
+   *
+   * @param string $return_url
+   *   URL to be returned to after login.
+   *
+   * @param string $email
+   *   Email address of logged in user.
+   *
+   * @param string $full_name
+   *   Full name of logged in user.
+   *
+   * @return array
+   *   JSON-decoded array
+   */
+  public function doGetSessionToken($return_url, $email = '', $full_name = '') {
+    $api_function = '/api/session/get-token';
+    $params = array(
+      'return_url' => $return_url,
+    );
+    if (!empty($email)) {
+      $params['email'] = $email;
+    }
+    if (!empty($full_name)) {
+      $params['full_name'] = $full_name;
+    }
+
+    $response = $this->doRequest($api_function, $params);
+    return $response;
   }
 
   /**
