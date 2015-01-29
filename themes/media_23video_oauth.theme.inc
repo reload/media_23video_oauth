@@ -28,3 +28,9 @@ function media_23video_oauth_preprocess_media_23video_video(&$variables) {
   $variables['width'] = 640;
   $variables['height'] = 480;
 }
+
+function media_23video_oauth_preprocess_media_23video_preview(&$variables) {
+  foreach ($variables['options'] as $key => $val) {
+    $variables[$key] = $val;
+  }
+}
