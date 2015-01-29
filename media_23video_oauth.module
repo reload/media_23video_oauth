@@ -32,18 +32,7 @@ function media_23video_oauth_menu() {
     'access arguments' => array('access media_23video'),
   );
 
-  $items['pishans'] = array(
-    'title' => 'pishans',
-    'description' => 'sthaoeu',
-    'page callback' => 'media_23video_oauth_pishans',
-    'access callback' => TRUE,
-  );
-
   return $items;
-}
-
-function media_23video_oauth_pishans() {
-  file_put_contents('/tmp/pishans.log', '[' . format_date(time(), 'long') . '] ' . print_r($_REQUEST, 1) . "\n\n", FILE_APPEND);
 }
 
 /**
