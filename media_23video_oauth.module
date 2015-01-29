@@ -32,7 +32,18 @@ function media_23video_oauth_menu() {
     'access arguments' => array('access media_23video'),
   );
 
+  $items['pishans'] = array(
+    'title' => 'pishans',
+    'description' => 'sthaoeu',
+    'page callback' => 'media_23video_oauth_pishans',
+    'access callback' => TRUE,
+  );
+
   return $items;
+}
+
+function media_23video_oauth_pishans() {
+  file_put_contents('/tmp/pishans.log', '[' . format_date(time(), 'long') . '] ' . print_r($_REQUEST, 1) . "\n\n", FILE_APPEND);
 }
 
 /**
@@ -147,28 +158,27 @@ function media_23video_oauth_file_formatter_video_view($file, $display, $langcod
   $media->setUri($uri);
   $video_url = $media->interpolateUrl();
 
-  $consumer = Media23VideoOauthConnector::getInstance();
-  $user_id = variable_get('media_23video_oauth_service_user_default', '');
-  // TODO: error handling.
-  $login_token_res = $consumer->doGetLoginToken($user_id, $video_url);
-  $login_token = NULL;
-  if ($login_token_res['status'] == 'ok') {
-    $login_token = $login_token_res['logintoken']['login_token'];
+  $url = NULL;
+  // If session token for 23Video is expired, get a new one.
+  if (!isset($_SESSION['23video-session-token']) || time() >= $_SESSION['23video-session-token'] + 30 * 60) {
+    $consumer = Media23VideoOauthConnector::getInstance();
+    $session_token = $consumer->doGetSessionToken($video_url);
+    dpm($session_token);
+
+    // Set unix timestamp in session variable.
+    $url = variable_get('media_23video_oauth_service_site_url') . '/api/session/redeem-token?session_token=' . $session_token['sessiontoken']['access_token'];
   }
   else {
-    watchdog('media_23video_oauth', $login_token_res, array(), WATCHDOG_ERROR);
-    $element = array(
-      '#theme' => 'media_23video_error',
-      '#options' => $login_token,
-    );
-    return $element;
+    $url = $media->interpolateUrl();
   }
+
+  // Save timestamp.
+  $_SESSION['23video-session-token'] = REQUEST_TIME;
 
   $element = array(
     '#theme' => 'media_23video_video',
     '#options' => array(
-      'url' => variable_get('media_23video_oauth_service_site_url') . '/api/user/redeem-login-token',
-      'login_token' => $login_token,
+      'url' => $url,
     ),
   );
   return $element;
