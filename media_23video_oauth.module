@@ -32,6 +32,14 @@ function media_23video_oauth_menu() {
     'access arguments' => array('access media_23video'),
   );
 
+  $items['media-23video-sessiontoken'] = array(
+    'title' => 'Media 23Video session token',
+    'description' => 'Callback for getting new session token and showing video',
+    'page callback' => 'media_23video_oauth_sessiontoken_callback',
+    'access arguments' => array('access media_23video'),
+    'page arguments' => array(1, 2),
+  );
+
   return $items;
 }
 
@@ -153,21 +161,11 @@ function media_23video_oauth_file_formatter_video_view($file, $display, $langcod
   $media->setUri($uri);
   $video_url = $media->interpolateUrl();
 
-  $url = NULL;
-  // If session token for 23Video is expired, get a new one.
-  if (!isset($_SESSION['23video-session-token']) || time() >= $_SESSION['23video-session-token'] + 30 * 60) {
-    $consumer = Media23VideoOauthConnector::getInstance();
-    $session_token = $consumer->doGetSessionToken($video_url);
+  // Always get a new session.
+  $consumer = Media23VideoOauthConnector::getInstance();
+  $session_token = $consumer->doGetSessionToken($video_url);
 
-    // Set unix timestamp in session variable.
-    $url = variable_get('media_23video_oauth_service_site_url') . '/api/session/redeem-token?session_token=' . $session_token['sessiontoken']['access_token'];
-  }
-  else {
-    $url = $media->interpolateUrl();
-  }
-
-  // Save timestamp.
-  $_SESSION['23video-session-token'] = REQUEST_TIME;
+  $url = variable_get('media_23video_oauth_service_site_url') . '/api/session/redeem-token?session_token=' . $session_token['sessiontoken']['access_token'];
 
   $element = array(
     '#theme' => 'media_23video_video',
@@ -213,6 +211,13 @@ function media_23video_oauth_file_formatter_image_view($file, $display, $langcod
     $image_style = $display['settings']['image_style'];
     $valid_image_styles = image_style_options(FALSE);
 
+    // Always get a new 23video session token.
+//    $consumer = Media23VideoOauthConnector::getInstance();
+//    $session_token = $consumer->doGetSessionToken($wrapper->interpolateUrl());
+
+//    $url = variable_get('media_23video_oauth_service_site_url') . '/api/session/redeem-token?session_token=' . $session_token['sessiontoken']['access_token'];
+    $url = '/media-23video-sessiontoken/' . intval($file->fid);
+
     if (empty($image_style) || !isset($valid_image_styles[$image_style])) {
       $element = array(
         '#theme' => 'media_23video_preview',
@@ -220,7 +225,7 @@ function media_23video_oauth_file_formatter_image_view($file, $display, $langcod
           'thumbnail' => $wrapper->getOriginalThumbnailPath(),
           'fid' => $file->fid,
         ),
-        '#url' => $wrapper->interpolateUrl(),
+        '#url' => $url,
         '#alt' => isset($file->override['attributes']['alt']) ? $file->override['attributes']['alt'] : $file->filename,
       );
     }
@@ -232,7 +237,7 @@ function media_23video_oauth_file_formatter_image_view($file, $display, $langcod
           'thumbnail' => $wrapper->getOriginalThumbnailPath(),
           'fid' => $file->fid,
         ),
-        '#url' => $wrapper->interpolateUrl(),
+        '#url' => $url,
         '#alt' => isset($file->override['attributes']['alt']) ? $file->override['attributes']['alt'] : $file->filename,
       );
     }
@@ -476,8 +481,9 @@ function media_23video_oauth_upload($form, &$form_state) {
     '#markup' => '<input type="button" id="edit-submit" value="' . t('Send') . '" class="form-submit">',
     '#attached' => array(
       'js' => array(
-        drupal_get_path('module', 'media_23video_oauth') . '/js/async_upload.js',
         'misc/jquery.form.js',
+//        '/sites/all/modules/jquery_update/replace/misc/jquery.form.js',
+        drupal_get_path('module', 'media_23video_oauth') . '/js/async_upload.js',
       ),
     ),
   );
@@ -584,4 +590,40 @@ function media_23video_oauth_uploadtoken_callback() {
 
   print drupal_json_encode($params);
   drupal_exit();
+}
+
+/**
+ * Callback for generating 23video session token and redirect to video player.
+ *
+ * @param int $fid
+ *   File id
+ *
+ * @return bool
+ *   Return FALSE if fid is not valid
+ */
+function media_23video_oauth_sessiontoken_callback($fid = NULL) {
+  if (!$fid) {
+    return FALSE;
+  }
+
+  // Get file.
+  $file = file_load($fid);
+  // If file is not valid, error.
+  if (!$file) {
+    return FALSE;
+  }
+
+  // Get video url.
+  $uri = $file->uri;
+  $media = new Media23VideoOauthStreamWrapper();
+  $media->setUri($uri);
+  $video_url = $media->interpolateUrl();
+
+  // Get session token url.
+  $consumer = Media23VideoOauthConnector::getInstance();
+  $session_token = $consumer->doGetSessionToken($video_url);
+
+  // Go to redeem token url, which will redirect to the video player.
+  $url = variable_get('media_23video_oauth_service_site_url') . '/api/session/redeem-token?session_token=' . $session_token['sessiontoken']['access_token'];
+  drupal_goto($url);
 }

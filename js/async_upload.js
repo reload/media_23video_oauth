@@ -68,6 +68,12 @@
    */
   Drupal.behaviors.upload = {
     attach: function (context, settings) {
+      $('#edit-submit').click(function (e) {
+        e.preventDefault();
+      });
+      $('#edit-submit--2').click(function (e) {
+        e.preventDefault();
+      });
       var upload = $('#media-23video-oauth-upload');
       upload.find('#edit-submit').click(function() {
         $('.ajax-progress-throbber div').attr('class', 'throbber');
