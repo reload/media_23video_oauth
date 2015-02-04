@@ -477,12 +477,13 @@ function media_23video_oauth_upload($form, &$form_state) {
     '#value' => '',
   );
 
+  // Add jquery form as a library.
+  drupal_add_library('misc', 'jquery.form');
+
   $form['submit'] = array(
     '#markup' => '<input type="button" id="edit-submit" value="' . t('Send') . '" class="form-submit">',
     '#attached' => array(
       'js' => array(
-        'misc/jquery.form.js',
-//        '/sites/all/modules/jquery_update/replace/misc/jquery.form.js',
         drupal_get_path('module', 'media_23video_oauth') . '/js/async_upload.js',
       ),
     ),
