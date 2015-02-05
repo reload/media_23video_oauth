@@ -45,9 +45,15 @@ It's much smaller than other OAuth libraries and doesn't have many dependencies
 
 INSTALLATION
 ------------
- * Install as you would normally install a contributed Drupal module. See:
-   https://drupal.org/documentation/install/modules-themes/modules-7
-   for further information.
+Start by downloading the Libraries module.
+
+Next download 23 Video for PHP under sites/all/libraries. You can do this by
+standing in the correct folder and performing the following command:
+  git clone https://github.com/23/23video-for-php.git
+
+Next, install as you would normally install a contributed Drupal module. See:
+  https://drupal.org/documentation/install/modules-themes/modules-7
+  for further information.
 
 CONFIGURATION
 -------------
