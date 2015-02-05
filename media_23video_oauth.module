@@ -62,6 +62,22 @@ function media_23video_oauth_permission() {
 }
 
 /**
+ * Implements hook_help().
+ */
+function media_23video_oauth_help($path) {
+  $output = '';
+  switch ($path) {
+    case 'admin/help#media_23video_oauth':
+      $file = dirname(__FILE__) . '/README.txt';
+      if (file_exists($file)) {
+        $output .= check_plain(file_get_contents($file));
+      }
+      $output = '<pre>' . $output . '</pre>';
+      return $output;
+  }
+}
+
+/**
  * Implements hook_file_mimetype_mapping_alter().
  *
  * Regster the video/23video mimetype.
@@ -163,6 +179,15 @@ function media_23video_oauth_file_formatter_video_view($file, $display, $langcod
 
   // Always get a new session.
   $consumer = Media23VideoOauthConnector::getInstance();
+  if ($consumer->error) {
+    $element = array(
+      '#theme' => 'media_23video_error',
+      '#options' => array(
+        'message' => $consumer->error,
+      ),
+    );
+    return $element;
+  }
   $session_token = $consumer->doGetSessionToken($video_url);
 
   $url = variable_get('media_23video_oauth_service_site_url') . '/api/session/redeem-token?session_token=' . $session_token['sessiontoken']['access_token'];
@@ -299,49 +324,57 @@ function media_23video_oauth_admin_form($form, &$form_state) {
 
   // Get album list.
   $consumer = Media23VideoOauthConnector::getInstance();
-  $album_list = $consumer->doAlbumList();
 
-  if ($album_list['status'] == 'ok' && isset($album_list['albums']) && is_array($album_list['albums']) && count($album_list['albums'])) {
-    // Select default album.
-    $albums = array('' => t('- choose album -'));
-    foreach ($album_list['albums'] as $key => $album) {
-      $albums[$album['album_id']] = $album['title'];
-    }
-
+  if ($consumer->error) {
     $form['media_23video_oauth_service_album_default'] = array(
-      '#type' => 'select',
-      '#title' => t('Default album'),
-      '#required' => TRUE,
-      '#options' => $albums,
-      '#default_value' => variable_get('media_23video_oauth_service_album_default', ''),
+      '#markup' => '<strong>' . t("Error loading library: !error", array('!error' => $consumer->error)) . '</strong>',
     );
   }
-  elseif ($album_list['status'] != 'ok') {
-    // Display error message.
-    $form['media_23video_oauth_service_album_default'] = array(
-      '#markup' => '<strong>' . t("Error communicating with web service. Error: @message. Code: @code", array(
-          '@message' => $album_list['message'],
-          '@code' => $album_list['code'],
-        )) . '</strong>',
-    );
-  }
+  else {
+    $album_list = $consumer->doAlbumList();
 
-  // Get user list.
-  $user_list = $consumer->doUserList();
+    if ($album_list['status'] == 'ok' && isset($album_list['albums']) && is_array($album_list['albums']) && count($album_list['albums'])) {
+      // Select default album.
+      $albums = array('' => t('- choose album -'));
+      foreach ($album_list['albums'] as $key => $album) {
+        $albums[$album['album_id']] = $album['title'];
+      }
 
-  if (isset($user_list['status']) && $user_list['status'] == 'ok' && is_array($user_list['users'])) {
-    $users = array('' => t('- choose user -'));
-    foreach ($user_list['users'] as $key => $user) {
-      $users[$user['user_id']] = $user['username'] . ' - ' . $user['display_name'] . ' (' . $user['email'] . ')';
+      $form['media_23video_oauth_service_album_default'] = array(
+        '#type' => 'select',
+        '#title' => t('Default album'),
+        '#required' => TRUE,
+        '#options' => $albums,
+        '#default_value' => variable_get('media_23video_oauth_service_album_default', ''),
+      );
+    }
+    elseif ($album_list['status'] != 'ok') {
+      // Display error message.
+      $form['media_23video_oauth_service_album_default'] = array(
+        '#markup' => '<strong>' . t("Error communicating with web service. Error: @message. Code: @code", array(
+            '@message' => $album_list['message'],
+            '@code' => $album_list['code'],
+          )) . '</strong>',
+      );
     }
 
-    $form['media_23video_oauth_service_user_default'] = array(
-      '#type' => 'select',
-      '#title' => t('Default user'),
-      '#required' => TRUE,
-      '#options' => $users,
-      '#default_value' => variable_get('media_23video_oauth_service_user_default', ''),
-    );
+    // Get user list.
+    $user_list = $consumer->doUserList();
+
+    if (isset($user_list['status']) && $user_list['status'] == 'ok' && is_array($user_list['users'])) {
+      $users = array('' => t('- choose user -'));
+      foreach ($user_list['users'] as $key => $user) {
+        $users[$user['user_id']] = $user['username'] . ' - ' . $user['display_name'] . ' (' . $user['email'] . ')';
+      }
+
+      $form['media_23video_oauth_service_user_default'] = array(
+        '#type' => 'select',
+        '#title' => t('Default user'),
+        '#required' => TRUE,
+        '#options' => $users,
+        '#default_value' => variable_get('media_23video_oauth_service_user_default', ''),
+      );
+    }
   }
   return system_settings_form($form);
 }
@@ -582,6 +615,10 @@ function media_23video_oauth_uploadtoken_callback() {
   $album_id = isset($params['description']) ? urldecode($params['album_id']) : '';
 
   $consumer = Media23VideoOauthConnector::getInstance();
+  if ($consumer->error) {
+    print drupal_json_encode(array('error' => $consumer->error));
+    drupal_exit();
+  }
   $upload_token = $consumer->doGetUploadToken($title, $description, $album_id, $base_url . '/media-23video-callback');
   $params = array(
     'title' => $title,
@@ -628,3 +665,23 @@ function media_23video_oauth_sessiontoken_callback($fid = NULL) {
   $url = variable_get('media_23video_oauth_service_site_url') . '/api/session/redeem-token?session_token=' . $session_token['sessiontoken']['access_token'];
   drupal_goto($url);
 }
+
+function media_23video_oauth_libraries_info() {
+  $libraries['23video-for-php'] = array(
+    'name' => '23video-for-php',
+    'vendor url' => 'http://23video.com',
+    'download url' => 'https://github.com/23/23video-for-php',
+    'files' => array(
+      'php' => array(
+        'visualvideo.php',
+      ),
+    ),
+    'version arguments' => array(
+      'file' => 'visualvideo.php',
+      'pattern' => '/(API client[^\.]+)/',
+    ),
+  );
+
+  return $libraries;
+}
+

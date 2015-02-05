@@ -15,11 +15,21 @@
 class Media23VideoOauthConnector {
   protected static $instance;
   protected $consumer;
+  public $error;
 
   /**
    * Singleton.
    */
   public static function getInstance() {
+    // Load oauth library.
+    $library = libraries_load('23video-for-php');
+    if (isset($library['error'])) {
+      $class = __CLASS__;
+      self::$instance = new $class();
+      self::$instance->error = $library['error message'];
+      return self::$instance;
+    }
+
     $consumer_key_public = variable_get('media_23video_oauth_service_api_key_public', '');
     $consumer_key_secret = variable_get('media_23video_oauth_service_api_key_secret', '');
     $access_token_public = variable_get('media_23video_oauth_service_api_access_token', '');
@@ -116,7 +126,9 @@ class Media23VideoOauthConnector {
 
       $response = $this->doRequest($api_function, $params);
 
-      cache_set(__CLASS__ . ':' . __FUNCTION__ . ':' . $photo_id, $response);
+      if ($response['status'] == 'ok') {
+        cache_set(__CLASS__ . ':' . __FUNCTION__ . ':' . $photo_id, $response);
+      }
     }
     else {
 
@@ -139,7 +151,9 @@ class Media23VideoOauthConnector {
       $api_function = '/api/album/list';
       $response = $this->doRequest($api_function, array());
 
-      cache_set(__CLASS__ . ':' . __FUNCTION__, $response);
+      if ($response['status'] == 'ok') {
+        cache_set(__CLASS__ . ':' . __FUNCTION__, $response);
+      }
     }
     else {
       $response = $cache->data;
