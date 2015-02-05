@@ -6,6 +6,7 @@ core = 7.x
 files[] = includes/Media23VideoOauthStreamWrapper.inc
 files[] = includes/Media23VideoOauthBrowser.inc
 files[] = includes/Media23VideoOauthConnector.inc
-files[] = libraries/23video-for-php/visualvideo.php
+configure[] = admin/config/media/media_23video
 
 dependencies[] = media
+dependencies[] = libraries
