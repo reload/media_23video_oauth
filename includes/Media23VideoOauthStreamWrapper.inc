@@ -47,9 +47,15 @@ class Media23VideoOauthStreamWrapper extends MediaReadOnlyStreamWrapper {
         $consumer->doSectionCreate($photo_id, 0);
         $sections = $consumer->doSectionList($photo_id, $token);
       }
-      $thumbnail_url = $sections['section']['quad100_download'];
       $base = variable_get('media_23video_oauth_service_site_url');
-      return $base . $thumbnail_url;
+      if (isset($sections['section'])) {
+        $thumbnail_url = $sections['section']['quad100_download'];
+        return $base . $thumbnail_url;
+      }
+      else {
+        // Return dummy url.
+        return $base;
+      }
     }
   }
 
