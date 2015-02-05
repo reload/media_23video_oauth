@@ -29,6 +29,11 @@ function media_23video_oauth_preprocess_media_23video_video(&$variables) {
   $variables['height'] = 480;
 }
 
+/**
+ * Implements TEME_preprocess().
+ *
+ * For video preview.
+ */
 function media_23video_oauth_preprocess_media_23video_preview(&$variables) {
   foreach ($variables['options'] as $key => $val) {
     $variables[$key] = $val;
