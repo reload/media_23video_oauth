@@ -66,7 +66,7 @@
    *
    * @type {{attach: Function}}
    */
-  Drupal.behaviors.upload = {
+  Drupal.behaviors.uploadFile = {
     attach: function (context, settings) {
       var upload = $('#media-23video-oauth-upload');
       upload.find('#edit-submit').click(function() {
