@@ -81,4 +81,5 @@ class Media23VideoOauthStreamWrapper extends MediaReadOnlyStreamWrapper {
 
     return $local_path;
   }
+
 }

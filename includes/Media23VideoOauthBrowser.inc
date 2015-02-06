@@ -41,4 +41,5 @@ class Media23VideoOauthBrowser extends MediaBrowserPlugin {
       return $build;
     }
   }
+
 }

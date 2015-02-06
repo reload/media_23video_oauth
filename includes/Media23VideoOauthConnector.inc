@@ -262,10 +262,8 @@ class Media23VideoOauthConnector {
    *
    * @param string $return_url
    *   URL to be returned to after login.
-   *
    * @param string $email
    *   Email address of logged in user.
-   *
    * @param string $full_name
    *   Full name of logged in user.
    *
