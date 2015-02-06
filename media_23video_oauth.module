@@ -630,7 +630,7 @@ function media_23video_oauth_uploadtoken_callback() {
  * Callback for generating 23video session token and redirect to video player.
  *
  * @param int $fid
- *   File id
+ *   File id.
  *
  * @return bool
  *   Return FALSE if fid is not valid
@@ -662,6 +662,9 @@ function media_23video_oauth_sessiontoken_callback($fid = NULL) {
   drupal_goto($url);
 }
 
+/**
+ * Implements hook_libraries_info().
+ */
 function media_23video_oauth_libraries_info() {
   $libraries['23video-for-php'] = array(
     'name' => '23video-for-php',
@@ -680,4 +683,3 @@ function media_23video_oauth_libraries_info() {
 
   return $libraries;
 }
-
