@@ -15,7 +15,7 @@ function media_23video_oauth_menu() {
     'type' => MENU_NORMAL_ITEM,
     'page callback' => 'drupal_get_form',
     'page arguments' => array('media_23video_oauth_admin_form'),
-    'access arguments' => array('administer media_23video'),
+    'access arguments' => array('administer media_23video_oauth'),
   );
 
   $items['media-23video-callback'] = array(
