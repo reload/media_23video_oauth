@@ -49,7 +49,7 @@ class Media23VideoOauthStreamWrapper extends MediaReadOnlyStreamWrapper {
       }
       $base = variable_get('media_23video_oauth_service_site_url');
       if (isset($sections['section'])) {
-        $thumbnail_url = $sections['section']['quad100_download'];
+        $thumbnail_url = $sections['section']['medium_download'];
         return $base . $thumbnail_url;
       }
       else {
