@@ -23,6 +23,7 @@ function media_23video_oauth_menu() {
     'description' => 'Callback for uploading videos to 23Video',
     'page callback' => 'media_23video_oauth_callback',
     'access arguments' => array('access media_23video'),
+    'type' => MENU_CALLBACK,
   );
 
   $items['media-23video-uploadtoken'] = array(
@@ -30,6 +31,7 @@ function media_23video_oauth_menu() {
     'description' => 'Callback for fetching upload token from 23Video server',
     'page callback' => 'media_23video_oauth_uploadtoken_callback',
     'access arguments' => array('access media_23video'),
+    'type' => MENU_CALLBACK,
   );
 
   $items['media-23video-sessiontoken'] = array(
@@ -38,6 +40,7 @@ function media_23video_oauth_menu() {
     'page callback' => 'media_23video_oauth_sessiontoken_callback',
     'access arguments' => array('access media_23video'),
     'page arguments' => array(1, 2),
+    'type' => MENU_CALLBACK,
   );
 
   return $items;
