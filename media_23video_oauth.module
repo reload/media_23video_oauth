@@ -249,51 +249,33 @@ function media_23video_oauth_file_formatter_image_view($file, $display, $langcod
         '#options' => array(
           'thumbnail' => $wrapper->getLocalThumbnailPath(),
           'fid' => $file->fid,
-          'width' => isset($display->settings['width']) ? $display->settings['width'] : 320,
-          'height' => isset($display->settings['height']) ? $display->settings['height'] : 180,
+          'width' => isset($display->settings['width']) ? $display->settings['width'] : 'auto',
+          'height' => isset($display->settings['height']) ? $display->settings['height'] : 'auto',
         ),
         '#url' => $url,
         '#alt' => isset($file->override['attributes']['alt']) ? $file->override['attributes']['alt'] : $file->filename,
       );
     }
     else {
+      // Get thumbnail path.
+      $thumbnail = $wrapper->getLocalThumbnailPath();
+
       // Thumbnail file for specific style.
-      $file_name = 'public://media-23video-oauth/' . intval($file->fid) . '_' . check_plain($image_style) . '.jpg';
+      $file_name = 'public://' . $image_style . '/public/media-23video-oauth/' . intval($file->fid) . '.jpg';
 
       // If file doesn't exist, create it.
       if (!file_exists($file_name)) {
-        // Get thumbnail path.
-        $thumbnail = $wrapper->getLocalThumbnailPath();
-        $image = image_load($thumbnail);
-        $image_style_ = image_style_load($image_style);
-
-        // Perform image style effects on image.
-        foreach ($image_style_['effects'] as $effect) {
-          $callback = $effect['effect callback'];
-          $data = $effect['data'];
-          if (function_exists($callback)) {
-            $callback($image, $data);
-          }
-          else {
-            drupal_set_message($callback . " doesn't exist?");
-          }
-        }
-
-        // Prepare directory for saving file.
-        $dirname = drupal_dirname($file_name);
-        file_prepare_directory($dirname, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
-        // Save file.
-        image_gd_save($image, $file_name);
+        $file_name = image_style_url($image_style, $thumbnail);
       }
 
       $element = array(
         '#theme' => 'media_23video_preview',
         '#style_name' => $image_style,
         '#options' => array(
-          'thumbnail' => file_create_url($file_name),
+          'thumbnail' => $file_name,
           'fid' => $file->fid,
-          'width' => isset($display->settings['width']) ? $display->settings['width'] : 320,
-          'height' => isset($display->settings['height']) ? $display->settings['height'] : 180,
+          'width' => isset($display->settings['width']) ? $display->settings['width'] : 'auto',
+          'height' => isset($display->settings['height']) ? $display->settings['height'] : 'auto',
         ),
         '#url' => $url,
         '#alt' => isset($file->override['attributes']['alt']) ? $file->override['attributes']['alt'] : $file->filename,
