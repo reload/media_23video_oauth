@@ -362,7 +362,8 @@ function media_23video_oauth_admin_form($form, &$form_state) {
     );
   }
   else {
-    $album_list = $consumer->doAlbumList();
+    // Remember to flush cache if service site url has changed.
+    $album_list = $consumer->doAlbumList(TRUE);
 
     if ($album_list['status'] == 'ok' && isset($album_list['albums']) && is_array($album_list['albums']) && count($album_list['albums'])) {
       // Select default album.
