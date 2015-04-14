@@ -233,7 +233,6 @@ function media_23video_oauth_file_formatter_video_settings($form, &$form_state, 
  * Implements hook_file_formatter_FORMATTER_view().
  */
 function media_23video_oauth_file_formatter_image_view($file, $display, $langcode) {
-//  dpm($display);
   $scheme = file_uri_scheme($file->uri);
   if ($scheme == '23video-oauth') {
     $wrapper = file_stream_wrapper_get_instance_by_uri($file->uri);
@@ -249,8 +248,8 @@ function media_23video_oauth_file_formatter_image_view($file, $display, $langcod
         '#options' => array(
           'thumbnail' => $wrapper->getLocalThumbnailPath(),
           'fid' => $file->fid,
-          'width' => isset($display->settings['width']) ? $display->settings['width'] : 'auto',
-          'height' => isset($display->settings['height']) ? $display->settings['height'] : 'auto',
+          'width' => isset($display['settings']['width']) ? $display['settings']['width'] : 'auto',
+          'height' => isset($display['settings']['height']) ? $display['settings']['height'] : 'auto',
         ),
         '#url' => $url,
         '#alt' => isset($file->override['attributes']['alt']) ? $file->override['attributes']['alt'] : $file->filename,
@@ -274,8 +273,8 @@ function media_23video_oauth_file_formatter_image_view($file, $display, $langcod
         '#options' => array(
           'thumbnail' => $file_name,
           'fid' => $file->fid,
-          'width' => isset($display->settings['width']) ? $display->settings['width'] : 'auto',
-          'height' => isset($display->settings['height']) ? $display->settings['height'] : 'auto',
+          'width' => isset($display['settings']['width']) ? $display['settings']['width'] : 'auto',
+          'height' => isset($display['settings']['height']) ? $display['settings']['height'] : 'auto',
         ),
         '#url' => $url,
         '#alt' => isset($file->override['attributes']['alt']) ? $file->override['attributes']['alt'] : $file->filename,
