@@ -13,11 +13,27 @@ include_once "media_23video_oauth.db.inc";
 function media_23video_oauth_menu() {
   $items = array();
 
-  $items['admin/config/media/media_23video'] = array(
+  $items['admin/config/media/media-23video'] = array(
     'title' => 'Media 23Video settings',
     'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'media_23video_oauth_admin',
+//    'page arguments' => array('media_23video_oauth_admin_form'),
+    'access arguments' => array('administer media_23video_oauth'),
+  );
+
+  $items['admin/config/media/media-23video/oauth'] = array(
+    'title' => 'Authenticate to 23Video site with OAuth',
+    'description' => 'Initialize OAuth',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('media_23video_oauth_admin_form'),
+    'page arguments' => array('media_23video_oauth_authenticate'),
+    'access arguments' => array('administer media_23video_oauth'),
+  );
+
+  $items['admin/config/media/media-23video/oauth-callback'] = array(
+    'title' => 'OAuth init callback',
+    'description' => 'Init callback',
+    'page callback' => 'media_23video_oauth_authenticate_callback',
+//    'access callback' => TRUE,
     'access arguments' => array('administer media_23video_oauth'),
   );
 
@@ -44,21 +60,6 @@ function media_23video_oauth_menu() {
     'access arguments' => array('access media_23video'),
     'page arguments' => array(1, 2),
     'type' => MENU_CALLBACK,
-  );
-
-  $items['media-23video-oauth'] = array(
-    'title' => 'OAuth',
-    'description' => 'Initialize OAuth',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('media_23video_oauth_authenticate'),
-    'access arguments' => array('administer media_23video_oauth'),
-  );
-
-  $items['media-23video-oauth-callback'] = array(
-    'title' => 'OAuth init callback',
-    'description' => 'Init callback',
-    'page callback' => 'media_23video_oauth_authenticate_callback',
-    'access callback' => TRUE,
   );
 
   return $items;
@@ -321,113 +322,6 @@ function media_23video_oauth_file_formatter_image_settings($form, &$form_state, 
 }
 
 /**
- * Admin settings form.
- */
-function media_23video_oauth_admin_form($form, &$form_state) {
-  $form[] = array();
-
-  $form['media_23video_oauth_service_site_url'] = array(
-    '#type' => 'textfield',
-    '#title' => t('23 Video site URL'),
-    '#description' => t('URL to your 23 Video site, e.g., <em>http://example.23video.com</em> (No trailing slash)'),
-    '#required' => TRUE,
-    '#default_value' => variable_get('media_23video_oauth_service_site_url', 'http://example.23video.com'),
-  );
-
-  $form['media_23video_oauth_service_api_key_public'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Consumer pulic Key'),
-    '#description' => t('To work with 23 Video, Drupal needs the application consumer key.'),
-    '#required' => TRUE,
-    '#default_value' => variable_get('media_23video_oauth_service_api_key_public', ''),
-  );
-
-  $form['media_23video_oauth_service_api_key_secret'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Secret Key'),
-    '#description' => t('To work with 23 Video, Drupal needs the application secret key.'),
-    '#required' => TRUE,
-    '#default_value' => variable_get('media_23video_oauth_service_api_key_secret', ''),
-  );
-  $form['media_23video_oauth_service_api_access_token'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Access token'),
-    '#required' => TRUE,
-    '#default_value' => variable_get('media_23video_oauth_service_api_access_token', ''),
-  );
-
-  $form['media_23video_oauth_service_api_access_token_secret'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Access token secret'),
-    '#required' => TRUE,
-    '#default_value' => variable_get('media_23video_oauth_service_api_access_token_secret', ''),
-  );
-
-  $form['media_23video_oauth_service_api_url'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Api url'),
-    '#description' => t('Api url. Exmple http://api.visualplatform.net/oauth/'),
-    '#required' => TRUE,
-    '#default_value' => variable_get('media_23video_oauth_service_api_url', 'http://api.visualplatform.net/oauth/'),
-  );
-
-  // Get album list.
-  $consumer = Media23VideoOauthConnector::getInstance();
-
-  if ($consumer->error) {
-    $form['media_23video_oauth_service_album_default'] = array(
-      '#markup' => '<strong>' . t("Error loading library: !error", array('!error' => $consumer->error)) . '</strong>',
-    );
-  }
-  else {
-    // Remember to flush cache if service site url has changed.
-    $album_list = $consumer->doAlbumList(TRUE);
-
-    if ($album_list['status'] == 'ok' && isset($album_list['albums']) && is_array($album_list['albums']) && count($album_list['albums'])) {
-      // Select default album.
-      $albums = array('' => t('- choose album -'));
-      foreach ($album_list['albums'] as $album) {
-        $albums[$album['album_id']] = $album['title'];
-      }
-
-      $form['media_23video_oauth_service_album_default'] = array(
-        '#type' => 'select',
-        '#title' => t('Default album'),
-        '#required' => TRUE,
-        '#options' => $albums,
-        '#default_value' => variable_get('media_23video_oauth_service_album_default', ''),
-      );
-    }
-    elseif ($album_list['status'] != 'ok') {
-      // Display error message.
-      $form['media_23video_oauth_service_album_default'] = array(
-        '#markup' => '<strong>' . t("Error communicating with web service. Error: @message. Code: @code", array(
-            '@message' => $album_list['message'],
-            '@code' => $album_list['code'],
-          )) . '</strong>',
-      );
-    }
-
-    // Get user list.
-    $user_list = $consumer->doUserList();
-
-    if (isset($user_list['status']) && $user_list['status'] == 'ok' && is_array($user_list['users'])) {
-      $users = array('' => t('- choose user -'));
-      foreach ($user_list['users'] as $user) {
-        $users[$user['user_id']] = $user['username'] . ' - ' . $user['display_name'] . ' (' . $user['email'] . ')';
-      }
-
-      $form['media_23video_oauth_service_user_default'] = array(
-        '#type' => 'select',
-        '#title' => t('Default user'),
-        '#required' => TRUE,
-        '#options' => $users,
-        '#default_value' => variable_get('media_23video_oauth_service_user_default', ''),
-      );
-    }
-  }
-  return system_settings_form($form);
-}
 
 /**
  * Validate handler.
