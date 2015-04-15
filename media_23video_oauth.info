@@ -6,6 +6,8 @@ core = 7.x
 files[] = includes/Media23VideoOauthStreamWrapper.inc
 files[] = includes/Media23VideoOauthBrowser.inc
 files[] = includes/Media23VideoOauthConnector.inc
+files[] = media_23video_oauth.db.inc
+files[] = media_23video_oauth.authenticate.inc
 configure = admin/config/media/media_23video
 
 dependencies[] = media

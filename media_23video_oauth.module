@@ -4,6 +4,9 @@
  * Media 23Video OAuth module file.
  */
 
+include_once "media_23video_oauth.authenticate.inc";
+include_once "media_23video_oauth.db.inc";
+
 /**
  * Implements hook_menu().
  */
@@ -41,6 +44,21 @@ function media_23video_oauth_menu() {
     'access arguments' => array('access media_23video'),
     'page arguments' => array(1, 2),
     'type' => MENU_CALLBACK,
+  );
+
+  $items['media-23video-oauth'] = array(
+    'title' => 'OAuth',
+    'description' => 'Initialize OAuth',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('media_23video_oauth_authenticate'),
+    'access arguments' => array('administer media_23video_oauth'),
+  );
+
+  $items['media-23video-oauth-callback'] = array(
+    'title' => 'OAuth init callback',
+    'description' => 'Init callback',
+    'page callback' => 'media_23video_oauth_authenticate_callback',
+    'access callback' => TRUE,
   );
 
   return $items;

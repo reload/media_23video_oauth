@@ -19,3 +19,93 @@ function media_23video_oauth_uninstall() {
   variable_del('media_23video_oauth_service_album_default');
   variable_del('media_23video_oauth_service_user_default');
 }
+
+/**
+ * Implements hook_schema().
+ */
+function media_23video_oauth_schema() {
+  $schema = array();
+
+  $schema['media_23video_oauth'] = array(
+    'description' => t('Media 23Video Oauth db table'),
+    'fields' => array(
+      'id' => array(
+        'description' => t('Primary ID'),
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'authenticated' => array(
+        'description' => t('Application is authenticated'),
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'consumer_key' => array(
+        'description' => t('Consumer Key'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'consumer_secret' => array(
+        'description' => t('Consumer Secret'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'oauth_token' => array(
+        'description' => t('OAuth token'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'oauth_token_secret' => array(
+        'description' => t('OAuth token secret'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'domain' => array(
+        'description' => t('Domain'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'user_id' => array(
+        'description' => t('User ID'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'user_name' => array(
+        'description' => t('User name'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'user_email' => array(
+        'description' => t('User e-mail'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'site_id' => array(
+        'description' => t('Site ID'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'site_name' => array(
+        'description' => t('Site Name'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+    ),
+    'unique keys' => array(
+      'id' => array('id'),
+    ),
+  );
+
+  return $schema;
+}
