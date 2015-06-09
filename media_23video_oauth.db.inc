@@ -546,3 +546,38 @@ function media_23video_oauth_role_max_weight($oauth_id) {
   }
 }
 
+/**
+ * Get user id according to logged in user's roles and weight of site settings.
+ *
+ * @param int $site_id
+ *   Site id
+ *
+ * @return array
+ *   Associative array of 23video application
+ */
+function media_23video_oauth_get_user_id($site_id = NULL) {
+  global $user;
+
+  $roles = array_keys($user->roles);
+
+  $query = db_select('media_23video_oauth', 'm');
+  $query->leftJoin('media_23video_oauth_roles', 'r', 'm.id = r.oauth_id');
+  $query->fields('m');
+  $query->fields('r');
+  $query->condition('r.role_id', $roles, 'IN');
+  if ($site_id) {
+    $query->condition('m.site_id', $site_id);
+  }
+  $query->orderBy('m.weight', 'ASC');
+  $query->orderby('r.weight', 'ASC');
+
+  try {
+    $res = $query->execute();
+    $record = $res->fetchAssoc();
+    return $record;
+  }
+  catch (PDOException $e) {
+    drupal_set_message(t("Error when fetching application settings"), 'error');
+    watchdog('media_23video_oauth', t("Exception raised while getting application settings. Message: @message", array('@message' => $e->getMessage())), WATCHDOG_ERROR);
+  }
+}
