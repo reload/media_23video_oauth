@@ -91,9 +91,11 @@ function media_23video_oauth_application_update($consumer_key, $consumer_secret,
       'site_id' => $site_id,
       'site_name' => $site_name,
       'authenticated' => 1,
+      'weight' => $weight,
     ));
     $query->condition('consumer_key', $consumer_key);
     $query->condition('consumer_secret', $consumer_secret);
+    $query->condition('authenticated', 0);
     return $query->execute() ? TRUE : FALSE;
   }
   catch (PDOException $e) {
