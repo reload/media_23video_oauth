@@ -37,6 +37,46 @@ function media_23video_oauth_menu() {
     'access arguments' => array('administer media_23video_oauth'),
   );
 
+  $items['admin/config/media/media-23video/oauth-delete/%'] = array(
+    'title' => 'Delete application/user',
+    'description' => 'Delete application/user entry',
+    'page callback' => 'drupal_get_form',
+    'access arguments' => array('administer media_23video_oauth'),
+    'page arguments' => array('media_23video_oauth_delete', 5),
+  );
+
+  $items['admin/config/media/media-23video/oauth-settings/%'] = array(
+    'title' => 'OAuth application settings',
+    'description' => 'Setup application/user role mappings',
+    'page callback' => 'drupal_get_form',
+    'access arguments' => array('administer media_23video_oauth'),
+    'page arguments' => array('media_23video_oauth_settings', 5),
+  );
+
+  $items['admin/config/media/media-23video/oauth-settings/%/add'] = array(
+    'title' => 'Add OAuth application role setting',
+    'description' => 'Add application/user role mappings',
+    'page callback' => 'drupal_get_form',
+    'access arguments' => array('administer media_23video_oauth'),
+    'page arguments' => array('media_23video_oauth_settings_add', 5),
+  );
+
+  $items['admin/config/media/media-23video/oauth-settings/%/delete/%'] = array(
+    'title' => 'Delete OAuth application role setting',
+    'description' => 'Delete application/user role mappings',
+    'page callback' => 'drupal_get_form',
+    'access arguments' => array('administer media_23video_oauth'),
+    'page arguments' => array('media_23video_oauth_settings_delete', 5, 7),
+  );
+
+  $items['admin/config/media/media-23video/oauth-settings/weight/%/%'] = array(
+    'title' => 'Change weight',
+    'description' => 'Change weight',
+    'page callback' => 'media_23video_oauth_weight_change',
+    'access arguments' => array('administer media_23video_oauth'),
+    'page arguments' => array(6, 7),
+  );
+
   $items['media-23video-callback'] = array(
     'title' => 'Media 23Video Callback',
     'description' => 'Callback for uploading videos to 23Video',
