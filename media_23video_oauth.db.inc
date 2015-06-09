@@ -389,3 +389,35 @@ function media_23video_oauth_role_add($oauth_id, $role_id, $weight = NULL, $weig
   }
 }
 
+/**
+ * Update role, e.g. change weight.
+ *
+ * @param int $oauth_id
+ *   Application/user id
+ *
+ * @param int $role_id
+ *   Role id
+ *
+ * @param int $weight
+ *   Weight
+ *
+ * @return bool
+ *   Return true if role was updated successfully
+ */
+function media_23video_oauth_role_update($oauth_id, $role_id, $weight = 0) {
+  try {
+    $query = db_update('media_23video_oauth_roles');
+    $query->fields(array(
+      'weight' => intval($weight),
+    ));
+    $query->condition('oauth_id', intval($oauth_id));
+    $query->condition('role_id', intval($role_id));
+    $res = $query->execute();
+    return ($res ? TRUE : FALSE);
+  }
+  catch (PDOException $e) {
+    drupal_set_message(t('Raised exception while updating role'), 'error');
+    return FALSE;
+  }
+}
+
