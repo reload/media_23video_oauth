@@ -447,3 +447,42 @@ function media_23video_oauth_role_delete($oauth_id, $role_id = NULL) {
   }
 }
 
+/**
+ * Get roles sorted by weight.
+ *
+ * @param int $oauth_id
+ *   (optional) OAuth id
+ *
+ * @param array $role_ids
+ *   (optional) Array of role ids
+ *
+ * @return array
+ *   Array of stdClass objects
+ */
+function media_23video_oauth_role_get($oauth_id = NULL, $role_ids = NULL) {
+  $query = db_select('media_23video_oauth_roles', 'm');
+  $query->fields('m');
+  if (intval($oauth_id)) {
+    $query->condition('oauth_id', intval($oauth_id));
+  }
+  if (intval($role_ids)) {
+    $role_ids = array($role_ids);
+  }
+  if (is_array($role_ids) && !empty($role_ids)) {
+    $query->condition('role_id', $role_ids, 'IN');
+  }
+
+  $query->leftJoin('role', 'r', 'r.rid = m.role_id');
+  $query->addField('r', 'name');
+
+  $query->orderBy('m.weight', 'ASC');
+
+  try {
+    $res = $query->execute();
+    return $res->fetchAll();
+  }
+  catch (PDOException $e) {
+    return FALSE;
+  }
+}
+
