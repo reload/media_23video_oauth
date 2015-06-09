@@ -256,3 +256,22 @@ function media_23video_oauth_get_applications($params = array(), $header = array
     return FALSE;
   }
 }
+
+/**
+ * Get max application weight.
+ *
+ * @return int
+ *   Max weight of applications
+ */
+function media_23video_oauth_application_max_weight() {
+  $query = db_select('media_23video_oauth');
+  $query->addExpression('MAX(weight)');
+  try {
+    $max = $query->execute()->fetchField();
+    return is_null($max) ? 0 : $max;
+  }
+  catch (PDOException $e) {
+    watchdog('media_23video_oauth', t("Couldn't get weight. Message: @message", array('@message' => $e->getMessage())), WATCHDOG_ERROR);
+  }
+}
+
