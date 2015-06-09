@@ -30,11 +30,13 @@ class Media23VideoOauthConnector {
       return self::$instance;
     }
 
-    $consumer_key_public = variable_get('media_23video_oauth_service_api_key_public', '');
-    $consumer_key_secret = variable_get('media_23video_oauth_service_api_key_secret', '');
-    $access_token_public = variable_get('media_23video_oauth_service_api_access_token', '');
-    $access_token_secret = variable_get('media_23video_oauth_service_api_access_token_secret', '');
-    $site_url = variable_get('media_23video_oauth_service_site_url', '');
+    $oauth = media_23video_oauth_get_user_id();
+
+    $consumer_key_public = $oauth['consumer_key'];
+    $consumer_key_secret = $oauth['consumer_secret'];
+    $access_token_public = $oauth['oauth_token'];
+    $access_token_secret = $oauth['oauth_token_secret'];
+    $site_url = 'http://' . $oauth['domain'];
 
     // Set up OAuth request.
     $consumer = new VisualVideo($site_url, $consumer_key_public, $consumer_key_secret, $access_token_public, $access_token_secret);
