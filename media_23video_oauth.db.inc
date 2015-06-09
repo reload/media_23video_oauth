@@ -192,6 +192,19 @@ function media_23video_oauth_application_get_by_oauth_token($oauth_token) {
   return FALSE;
 }
 
+function media_23video_oauth_application_get_by_oauth_id($oauth_id) {
+  if (is_null($oauth_id)) {
+    return FALSE;
+  }
+
+  $records = media_23video_oauth_get_applications(array('id' => $oauth_id));
+
+  if (!is_null($records)) {
+    return $records;
+  }
+  return FALSE;
+}
+
 /**
  * Get application records from db.
  *
