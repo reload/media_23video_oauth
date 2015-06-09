@@ -6,6 +6,7 @@
 
 include_once "media_23video_oauth.authenticate.inc";
 include_once "media_23video_oauth.db.inc";
+include_once "media_23video_oauth.settings.inc";
 
 /**
  * Implements hook_menu().
