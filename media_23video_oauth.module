@@ -200,6 +200,12 @@ function media_23video_oauth_theme($existing, $type, $theme, $path) {
       'path' => $path . '/themes',
       'template' => 'media-23video-preview',
     ),
+    'media_23video_form_table' => array(
+      'file' => 'media_23video_oauth.theme.inc',
+      'path' => $path . '/themes',
+      'template' => 'media-23video-form-table',
+      'render element' => 'form',
+    ),
   );
 }
 
