@@ -18,9 +18,9 @@
  * @return bool
  *   Return TRUE on success
  */
-function media_23video_oauth_db_add($consumer_key, $consumer_secret, $oauth_token, $oauth_token_secret) {
+function media_23video_oauth_application_add($consumer_key, $consumer_secret, $oauth_token, $oauth_token_secret) {
   // Don't create if it already exists.
-  if (media_23video_oauth_db_count_by_consumer($consumer_key, $consumer_secret) > 0) {
+  if (media_23video_oauth_application_count_by_consumer($consumer_key, $consumer_secret, FALSE) > 0) {
     return FALSE;
   }
 
@@ -77,7 +77,7 @@ function media_23video_oauth_db_add($consumer_key, $consumer_secret, $oauth_toke
  * @return bool
  *   Return TRUE on success
  */
-function media_23video_oauth_db_update($consumer_key, $consumer_secret, $oauth_token, $oauth_token_secret, $domain, $user_id, $user_name, $user_email, $site_id, $site_name) {
+function media_23video_oauth_application_update($consumer_key, $consumer_secret, $oauth_token, $oauth_token_secret, $domain, $user_id, $user_name, $user_email, $site_id, $site_name, $weight) {
 
   try {
     $query = db_update('media_23video_oauth');
@@ -104,7 +104,7 @@ function media_23video_oauth_db_update($consumer_key, $consumer_secret, $oauth_t
 }
 
 /**
- * Delete application/user entry from db.
+ * Delete application/user entry and related roles from db.
  *
  * @param null $id
  *   ID of entry
@@ -112,7 +112,7 @@ function media_23video_oauth_db_update($consumer_key, $consumer_secret, $oauth_t
  * @return bool
  *   TRUE on success, FALSE otherwise
  */
-function media_23video_oauth_db_delete($id = NULL) {
+function media_23video_oauth_application_delete($id = NULL) {
   if (!$id) {
     return FALSE;
   }
@@ -144,11 +144,14 @@ function media_23video_oauth_db_delete($id = NULL) {
  * @param string $consumer_secret
  *   Consumer secret
  *
+ * @param bool $authenticated
+ *   Check for authenticated or non-authenticated applications
+ *
  * @return int
  *   Return db count
  */
-function media_23video_oauth_db_count_by_consumer($consumer_key, $consumer_secret) {
-  return media_23video_oauth_get_applications(array('consumer_key' => $consumer_key, 'consumer_secret' => $consumer_secret), array(), TRUE);
+function media_23video_oauth_application_count_by_consumer($consumer_key, $consumer_secret, $authenticated = FALSE) {
+  return media_23video_oauth_get_applications(array('consumer_key' => $consumer_key, 'consumer_secret' => $consumer_secret, 'authenticated' => $authenticated), array(), TRUE);
 }
 
 /**
@@ -160,7 +163,7 @@ function media_23video_oauth_db_count_by_consumer($consumer_key, $consumer_secre
  * @return bool|stdClass
  *   Return FALSE if not found or stdClass of record
  */
-function media_23video_oauth_db_get_by_oauth_token($oauth_token) {
+function media_23video_oauth_application_get_by_oauth_token($oauth_token) {
   if (is_null($oauth_token)) {
     return FALSE;
   }
