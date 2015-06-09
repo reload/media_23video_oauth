@@ -293,3 +293,56 @@ function media_23video_oauth_application_min_weight() {
   }
 }
 
+/**
+ * Replace weight of an application with either the previous or next app.
+ *
+ * @param int $weight
+ *   The weight to replace
+ *
+ * @param string $direction
+ *   Which direction to replace weight (up or down)
+ */
+function media_23video_oauth_application_weight_change($weight, $direction) {
+  $new_weight = $direction == 'up' ? $weight - 1 : $weight + 1;
+  $query = db_select('media_23video_oauth', 'm');
+  $query->fields('m');
+
+  $db_or = db_or();
+  $db_or->condition('m.weight', $weight);
+  $db_or->condition('m.weight', $new_weight);
+  $query->condition($db_or);
+  $query->orderBy('m.weight', $direction == 'up' ? 'desc' : 'asc');
+  try {
+    $res = $query->execute();
+    $record_1 = $res->fetchAssoc();
+    $record_2 = $res->fetchAssoc();
+  }
+  catch (PDOException $e) {
+    watchdog('media_23video_oauth', t("Couldn't get weights. Message: @message", array('@message' => $e->getMessage())), WATCHDOG_ERROR);
+  }
+
+  $query = db_update('media_23video_oauth');
+  $query->fields(array(
+    'weight' => $new_weight,
+  ));
+  try {
+    $query->condition('id', $record_1['id']);
+    $query->execute();
+  }
+  catch (PDOException $e) {
+    watchdog('media_23video_oauth', t("Couldn't update weight. Message: @message", array('@message' => $e->getMessage())), WATCHDOG_ERROR);
+  }
+
+  $query = db_update('media_23video_oauth');
+  $query->fields(array(
+    'weight' => $weight,
+  ));
+  try {
+    $query->condition('id', $record_2['id']);
+    $query->execute();
+  }
+  catch (PDOException $e) {
+    watchdog('media_23video_oauth', t("Couldn't update weight. Message: @message", array('@message' => $e->getMessage())), WATCHDOG_ERROR);
+  }
+}
+
