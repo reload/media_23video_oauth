@@ -523,3 +523,26 @@ function media_23video_oauth_roles_get($oauth_id = NULL, $role_ids = NULL) {
   }
 }
 
+/**
+ * Get max wight of roles.
+ *
+ * @param int $oauth_id
+ *   Application/user id
+ *
+ * @return bool|int
+ *   Return int on success, FALSE otherwise
+ */
+function media_23video_oauth_role_max_weight($oauth_id) {
+  $query = db_select('media_23video_oauth_roles');
+  $query->addExpression('MAX(weight)');
+  $query->condition('oauth_id', $oauth_id);
+  try {
+    $max = $query->execute()->fetchField();
+    return is_null($max) ? 0 : $max;
+  }
+  catch (PDOException $e) {
+    watchdog ('media_23video_oauth', t("Couldn't change weight of role. Message: @message", array('@message' => $e->getMessage())), WATCHDOG_ERROR);
+    return FALSE;
+  }
+}
+
