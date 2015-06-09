@@ -346,3 +346,46 @@ function media_23video_oauth_application_weight_change($weight, $direction) {
   }
 }
 
+/**
+ * Add role for application.
+ *
+ * @param int $oauth_id
+ *   Application/user id
+ *
+ * @param int $role_id
+ *   Role id
+ *
+ * @param int $weight
+ *   Weight
+ *
+ * @param bool $weight_auto_inc
+ *   Whether to increment weight automatically
+ *
+ * @return bool
+ *   Returns true if role was added
+ */
+function media_23video_oauth_role_add($oauth_id, $role_id, $weight = NULL, $weight_auto_inc = FALSE) {
+  try {
+    $query = db_insert('media_23video_oauth_roles');
+    $fields = array(
+      'oauth_id' => intval($oauth_id),
+      'role_id' => intval($role_id),
+    );
+    if (!is_null($weight)) {
+      $fields['weight'] = intval($weight);
+    }
+    if ($weight_auto_inc) {
+      $max_weight = media_23video_oauth_role_max_weight($oauth_id);
+      $max_weight++;
+      $fields['weight'] = $max_weight;
+    }
+
+    $query->fields($fields);
+    $res = $query->execute();
+    return TRUE;
+  }
+  catch (PDOException $e) {
+    return FALSE;
+  }
+}
+
