@@ -486,3 +486,40 @@ function media_23video_oauth_role_get($oauth_id = NULL, $role_ids = NULL) {
   }
 }
 
+/**
+ * @param int $oauth_id
+ *   Application/user id
+ *
+ * @param array $role_ids
+ *   Array of role ids
+ *
+ * @return bool|array
+ *   Returns associative array on success, FALSE otherwise
+ */
+function media_23video_oauth_roles_get($oauth_id = NULL, $role_ids = NULL) {
+  $query = db_select('media_23video_oauth_roles', 'm');
+  $query->fields('m');
+  if (intval($oauth_id)) {
+    $query->condition('oauth_id', intval($oauth_id));
+  }
+  if (!empty($role_ids) && !is_array($role_ids)) {
+    $role_ids = array($role_ids);
+  }
+  if (is_array($role_ids) && !empty($role_ids)) {
+    $query->condition('role_id', $role_ids, 'IN');
+  }
+
+  $query->leftJoin('role', 'r', 'r.rid = m.role_id');
+  $query->addField('r', 'name');
+
+  $query->orderBy('m.weight', 'ASC');
+
+  try {
+    $res = $query->execute();
+    return $res->fetchAllAssoc('role_id');
+  }
+  catch (PDOException $e) {
+    return FALSE;
+  }
+}
+
