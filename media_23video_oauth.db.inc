@@ -133,6 +133,23 @@ function media_23video_oauth_application_delete($id = NULL) {
     watchdog('media_23video_oauth', 'Exception raised while deleting application/user entry. Message: ' . $e->getMessage(), WATCHDOG_ERROR);
     return FALSE;
   }
+
+  // Also delete roles for the deleted application/user.
+  try {
+    $query = db_delete('media_23video_oauth_roles');
+    $query->condition('oauth_id', intval($id));
+    $res = $query->execute();
+    if (!$res) {
+      return FALSE;
+    }
+  }
+  catch (PDOException $e) {
+    drupal_set_message(t('Exception raised while deleting role from db.'), 'error');
+    watchdog('media_23video_oauth', 'Exception raised while deleting role entry. Message: ' . $e->getMessage(), WATCHDOG_ERROR);
+    return FALSE;
+  }
+
+  return TRUE;
 }
 
 /**
