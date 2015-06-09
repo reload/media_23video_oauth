@@ -421,3 +421,29 @@ function media_23video_oauth_role_update($oauth_id, $role_id, $weight = 0) {
   }
 }
 
+/**
+ * Delete role/roles.
+ *
+ * @param int $oauth_id
+ *   Application/user id
+ *
+ * @param int $role_id
+ *   (optional) Role id. If this is omitted, delete all roles for oauth_id.
+ *
+ * @return bool
+ */
+function media_23video_oauth_role_delete($oauth_id, $role_id = NULL) {
+  try {
+    $query = db_delete('media_23video_oauth_roles');
+    $query->condition('oauth_id', intval($oauth_id));
+    if ($role_id) {
+      $query->condition('role_id', intval($role_id));
+    }
+    $res = $query->execute();
+    return $res ? TRUE : FALSE;
+  }
+  catch (PDOException $e) {
+    return FALSE;
+  }
+}
+
