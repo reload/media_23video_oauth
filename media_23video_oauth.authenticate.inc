@@ -1,10 +1,18 @@
 <?php
 
 /**
- * Admin settings form.
+ * Table of 23Video sites.
  */
 function media_23video_oauth_admin() {
   $header = array(
+    array(
+      'data' => 'Weight',
+      'field' => 'weight',
+      'sort' => 'asc',
+    ),
+    array(
+      'data' => 'Change weight',
+    ),
     array(
       'data' => 'Domain',
       'field' => 'domain',
@@ -30,16 +38,48 @@ function media_23video_oauth_admin() {
       'field' => 'consumer_key',
       'sort' => 'asc',
     ),
+    array(
+      'data' => 'Roles',
+    ),
+    array(
+      'data' => 'Actions',
+    ),
   );
   $rows = array();
 
+  $min_weight = media_23video_oauth_application_min_weight();
+  $max_weight = media_23video_oauth_application_max_weight();
+
   foreach (media_23video_oauth_get_applications(array(), $header) as $id => $application) {
+    $roles_o = media_23video_oauth_roles_get($id);
+    $roles = array();
+    foreach ($roles_o as $role) {
+      $roles[] = $role->name;
+    }
+
+    $change_weight = array();
+    if ($application->weight != $min_weight) {
+      $change_weight[] = l(t('Up'), url('admin/config/media/media-23video/oauth-settings/weight/' . $application->weight . '/up'));
+    }
+    if ($application->weight != $max_weight) {
+      $change_weight[] = l(t('Down'), url('admin/config/media/media-23video/oauth-settings/weight/' . $application->weight . '/down'));
+    }
+
+    $actions = array(
+      l(t('Settings'), url('admin/config/media/media-23video/oauth-settings/' . $id)),
+      l(t('Delete'), url('admin/config/media/media-23video/oauth-delete/' . $id))
+    );
+
     $rows[] = array(
+      $application->weight,
+      implode(' | ', $change_weight),
       $application->domain,
       $application->site_name,
       $application->user_name,
       $application->user_email,
       $application->consumer_key,
+      implode(', ', $roles),
+      implode(' | ', $actions),
     );
   }
 
@@ -57,6 +97,11 @@ function media_23video_oauth_admin() {
   $res .= l(t('Connect to new application / user (consumer key/secret pair)'), url('admin/config/media/media-23video/oauth'));
 
   return $res;
+}
+
+function media_23video_oauth_weight_change($weight, $direction) {
+  media_23video_oauth_application_weight_change($weight, $direction);
+  drupal_goto('admin/config/media/media-23video');
 }
 
 /**
@@ -97,7 +142,7 @@ function media_23video_oauth_authenticate_validate($form, &$form_state) {
   }
 
   // Check if consumer key/secret pair already exists in db.
-  if (media_23video_oauth_db_count_by_consumer($form_state['values']['consumer']['consumer_key'], $form_state['values']['consumer']['consumer_secret']) > 0) {
+  if (media_23video_oauth_application_count_by_consumer($form_state['values']['consumer']['consumer_key'], $form_state['values']['consumer']['consumer_secret'], FALSE) > 0) {
     form_set_error('consumer', t('Consumer key/secret pair already exists'));
   }
 }
@@ -113,7 +158,7 @@ function media_23video_oauth_authenticate_submit($form, &$form_state) {
     $request = $oauth->getRequestToken('http://api.visualplatform.net/oauth/request_token', $base_url . '/admin/config/media/media-23video/oauth-callback');
 
     if ($request['oauth_callback_confirmed'] == TRUE) {
-      media_23video_oauth_db_add($form_state['values']['consumer']['consumer_key'], $form_state['values']['consumer']['consumer_secret'], $request['oauth_token'], $request['oauth_token_secret']);
+      media_23video_oauth_application_add($form_state['values']['consumer']['consumer_key'], $form_state['values']['consumer']['consumer_secret'], $request['oauth_token'], $request['oauth_token_secret']);
       $form_state['redirect'] = 'http://api.visualplatform.net/oauth/authorize?oauth_token=' . check_plain($request['oauth_token']);
     }
   }
@@ -133,12 +178,13 @@ function media_23video_oauth_authenticate_callback() {
   global $base_url;
   $params = drupal_get_query_parameters();
 
-  $application = media_23video_oauth_db_get_by_oauth_token($params['oauth_token']);
+  $application = media_23video_oauth_application_get_by_oauth_token($params['oauth_token']);
   if (!$application) {
     drupal_set_message(t("Application/user doesn't exist"), 'error');
     drupal_goto('admin/config/media/media-23video');
   }
 
+  // Create OAuth object and set tokens.
   $oauth = new OAuth($application->consumer_key, $application->consumer_secret);
   $oauth->setToken($application->oauth_token, $application->oauth_token_secret);
 
@@ -154,7 +200,34 @@ function media_23video_oauth_authenticate_callback() {
     watchdog('media_23video_oauth', 'Exception: ' . $e->getMessage(), array(), WATCHDOG_ERROR);
   }
 
-  media_23video_oauth_db_update($application->consumer_key, $application->consumer_secret, $response['oauth_token'], $response['oauth_token_secret'], $response['domain'], $response['user_id'], $response['user_name'], $response['user_email'], $response['site_id'], $response['site_name']);
+  $weight = media_23video_oauth_application_max_weight() + 1;
+
+  media_23video_oauth_application_update($application->consumer_key, $application->consumer_secret, $response['oauth_token'], $response['oauth_token_secret'], $response['domain'], $response['user_id'], $response['user_name'], $response['user_email'], $response['site_id'], $response['site_name'], $weight);
 
   drupal_goto('admin/config/media/media-23video');
+}
+
+function media_23video_oauth_delete($form, &$form_state, $id) {
+  $form['application'] = array(
+    '#type' => 'hidden',
+    '#value' => $id,
+  );
+
+  $res = confirm_form($form, t('Are you sure?'), 'admin/config/media/media-23video');
+  return $res;
+}
+
+function media_23video_oauth_delete_submit($form, &$form_state) {
+  $id = isset($form_state['values']['application']) ? $form_state['values']['application'] : 0;
+
+  $res = media_23video_oauth_application_delete($id);
+  if ($res) {
+    drupal_set_message(t('Application successfully deleted'));
+  }
+  else {
+    drupal_set_message(t("Couldn't delete application."), 'error');
+    watchdog('media_23video_oauth', t("Couldn't delete application."), WATCHDOG_ERROR);
+  }
+
+  $form_state['redirect'] = 'admin/config/media/media-23video';
 }
