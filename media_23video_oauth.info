@@ -8,7 +8,8 @@ files[] = includes/Media23VideoOauthBrowser.inc
 files[] = includes/Media23VideoOauthConnector.inc
 files[] = media_23video_oauth.db.inc
 files[] = media_23video_oauth.authenticate.inc
+files[] = media_23video_oauth.settings.inc
 configure = admin/config/media/media_23video
 
-dependencies[] = media
+dependencies[] = media (>=7.x-2.0-alpha4)
 dependencies[] = libraries
