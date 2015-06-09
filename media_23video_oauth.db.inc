@@ -275,3 +275,21 @@ function media_23video_oauth_application_max_weight() {
   }
 }
 
+/**
+ * Get min application weight.
+ *
+ * @return int
+ *   Min weight of applications
+ */
+function media_23video_oauth_application_min_weight() {
+  $query = db_select('media_23video_oauth');
+  $query->addExpression('MIN(weight)');
+  try {
+    $min = $query->execute()->fetchField();
+    return is_null($min) ? 0 : $min;
+  }
+  catch (PDOException $e) {
+    watchdog('media_23video_oauth', t("Couldn't get weight. Message: @message", array('@message' => $e->getMessage())), WATCHDOG_ERROR);
+  }
+}
+
