@@ -240,7 +240,7 @@ function media_23video_oauth_get_applications($params = array(), $header = array
     $query->orderByHeader($header);
   }
   else {
-    $query->orderBy('m.site_id', 'ASC');
+    $query->orderBy('m.weight', 'ASC');
   }
 
   try {
