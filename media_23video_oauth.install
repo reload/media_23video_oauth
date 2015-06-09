@@ -26,6 +26,7 @@ function media_23video_oauth_schema() {
       'id' => array(
         'description' => t('Primary ID'),
         'type' => 'serial',
+        'size' => 'big',
         'not null' => TRUE,
       ),
       'authenticated' => array(
@@ -95,9 +96,62 @@ function media_23video_oauth_schema() {
         'length' => 255,
         'not null' => FALSE,
       ),
+      'weight' => array(
+        'description' => t('Weight'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
     ),
+    /*'indexes' => array(
+      'id_' => array('id'),
+    ),*/
     'unique keys' => array(
       'id' => array('id'),
+    ),
+    'primary key' => array('id'),
+    'foreign keys' => array(
+      'media_23video_oauth_roles' => array(
+        'table' => 'media_23video_oauth_roles',
+        'columns' => array('id' => 'oauth_id'),
+      ),
+    ),
+  );
+
+  $schema['media_23video_oauth_roles'] = array(
+    'description' => t('23video site roles configuration'),
+    'fields' => array(
+      'oauth_id' => array(
+        'description' => t('OAuth id - id from other table'),
+        'type' => 'int',
+        'size' => 'big',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'role_id' => array(
+        'description' => t('Role ID'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'weight' => array(
+        'description' => t('Weight'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'oauth_id' => array('oauth_id'),
+    ),
+    'primary key' => array('oauth_id', 'role_id'),
+    'foreign keys' => array(
+      'media_23video_oauth' => array(
+        'table' => 'media_23video_oauth',
+        'columns' => array('oauth_id' => 'id'),
+      ),
     ),
   );
 
