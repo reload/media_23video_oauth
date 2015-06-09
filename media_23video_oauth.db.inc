@@ -119,14 +119,12 @@ function media_23video_oauth_application_delete($id = NULL) {
     return FALSE;
   }
 
+  // Delete application/user.
   try {
     $query = db_delete('media_23video_oauth');
     $query->condition('id', intval($id));
     $res = $query->execute();
-    if ($res) {
-      return TRUE;
-    }
-    else {
+    if (!$res) {
       return FALSE;
     }
   }
