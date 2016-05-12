@@ -1,5 +1,5 @@
 name = Media 23Video OAuth
-description = Media 23Video with OAuth authentication
+description = Media 23Video with OAuth authorized
 package = 23Video OAuth
 core = 7.x
 
@@ -7,7 +7,7 @@ files[] = includes/Media23VideoOauthStreamWrapper.inc
 files[] = includes/Media23VideoOauthBrowser.inc
 files[] = includes/Media23VideoOauthConnector.inc
 files[] = media_23video_oauth.db.inc
-files[] = media_23video_oauth.authenticate.inc
+files[] = media_23video_oauth.authorize.inc
 files[] = media_23video_oauth.settings.inc
 configure = admin/config/media/media_23video
 

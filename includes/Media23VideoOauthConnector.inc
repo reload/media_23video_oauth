@@ -61,6 +61,9 @@ class Media23VideoOauthConnector {
    *   Return json-decoded array
    */
   protected function doRequest($api_function, $params = array()) {
+//    file_put_contents('/tmp/test.txt', print_r(array(
+//      'api_function' => $api_function, 'params' => $params
+//    ), 1));
     $consumer = $this->getConsumer();
     $params['format'] = 'json';
     $params['raw'] = 1;

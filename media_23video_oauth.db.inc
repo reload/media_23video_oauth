@@ -90,12 +90,12 @@ function media_23video_oauth_application_update($consumer_key, $consumer_secret,
       'user_email' => $user_email,
       'site_id' => $site_id,
       'site_name' => $site_name,
-      'authenticated' => 1,
+      'authorized' => 1,
       'weight' => $weight,
     ));
     $query->condition('consumer_key', $consumer_key);
     $query->condition('consumer_secret', $consumer_secret);
-    $query->condition('authenticated', 0);
+    $query->condition('authorized', 0);
     return $query->execute() ? TRUE : FALSE;
   }
   catch (PDOException $e) {
@@ -161,14 +161,14 @@ function media_23video_oauth_application_delete($id = NULL) {
  * @param string $consumer_secret
  *   Consumer secret
  *
- * @param bool $authenticated
- *   Check for authenticated or non-authenticated applications
+ * @param bool $authorized
+ *   Check for authorized or non-authorized applications
  *
  * @return int
  *   Return db count
  */
-function media_23video_oauth_application_count_by_consumer($consumer_key, $consumer_secret, $authenticated = FALSE) {
-  return media_23video_oauth_get_applications(array('consumer_key' => $consumer_key, 'consumer_secret' => $consumer_secret, 'authenticated' => $authenticated), array(), TRUE);
+function media_23video_oauth_application_count_by_consumer($consumer_key, $consumer_secret, $authorized = FALSE) {
+  return media_23video_oauth_get_applications(array('consumer_key' => $consumer_key, 'consumer_secret' => $consumer_secret, 'authorized' => $authorized), array(), TRUE);
 }
 
 /**

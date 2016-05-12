@@ -29,8 +29,8 @@ function media_23video_oauth_schema() {
         'size' => 'big',
         'not null' => TRUE,
       ),
-      'authenticated' => array(
-        'description' => t('Application is authenticated'),
+      'authorized' => array(
+        'description' => t('Application is authorized'),
         'type' => 'int',
         'size' => 'tiny',
         'not null' => TRUE,

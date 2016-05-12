@@ -105,9 +105,9 @@ function media_23video_oauth_weight_change($weight, $direction) {
 }
 
 /**
- * OAuth authentication form.
+ * OAuth authorization form.
  */
-function media_23video_oauth_authenticate() {
+function media_23video_oauth_authorization() {
   $form = array();
 
   $form['consumer']['consumer_key'] = array(
@@ -131,9 +131,9 @@ function media_23video_oauth_authenticate() {
 }
 
 /**
- * OAuth authentication validation handler.
+ * OAuth authorization validation handler.
  */
-function media_23video_oauth_authenticate_validate($form, &$form_state) {
+function media_23video_oauth_authorize_validate($form, &$form_state) {
   if (!isset($form_state['values']['consumer']['consumer_key']) || empty($form_state['values']['consumer']['consumer_key'])) {
     form_set_error('consumer_key', t('Consumer key must be set'));
   }
@@ -148,9 +148,9 @@ function media_23video_oauth_authenticate_validate($form, &$form_state) {
 }
 
 /**
- * OAuth authentication submit handler.
+ * OAuth authorization submit handler.
  */
-function media_23video_oauth_authenticate_submit($form, &$form_state) {
+function media_23video_oauth_authorize_submit($form, &$form_state) {
   global $base_url;
 
   $oauth = new OAuth($form_state['values']['consumer']['consumer_key'], $form_state['values']['consumer']['consumer_secret']);
@@ -174,7 +174,7 @@ function media_23video_oauth_authenticate_submit($form, &$form_state) {
 /**
  *
  */
-function media_23video_oauth_authenticate_callback() {
+function media_23video_oauth_authorize_callback() {
   global $base_url;
   $params = drupal_get_query_parameters();
 

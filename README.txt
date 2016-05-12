@@ -2,7 +2,7 @@ INTRODUCTION
 ------------
 Media 23Video OAuth integrates with the Media module to upload videos to and
 show videos from 23Video when using access restrictions on videos. The module
-uses OAuth authentication via 23Video's own OAuth implementation
+uses OAuth authorization via 23Video's own OAuth implementation
 (https://github.com/23/23video-for-php).
 
 Users can upload files to the 23Video server without having their own login to
@@ -33,7 +33,7 @@ and viewing videos on a 23Video account.
 
 Media 23Video auth sandbox module
 (https://www.drupal.org/sandbox/spheresh/2111835) Media 23Video auth provides
-basic support for authenticating via OAuth, but doesn't yet support uploading or
+basic support for authorization via OAuth, but doesn't yet support uploading or
 viewing videos. The module also uses a different OAuth library.
 
 BUNDLES
