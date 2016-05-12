@@ -26,7 +26,7 @@ function media_23video_oauth_menu() {
     'title' => 'Authorize to 23Video site with OAuth',
     'description' => 'Initialize OAuth',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('media_23video_oauth_authorize'),
+    'page arguments' => array('media_23video_oauth_authorization'),
     'access arguments' => array('administer media_23video_oauth'),
   );
 
